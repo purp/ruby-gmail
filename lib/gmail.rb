@@ -119,7 +119,7 @@ class Gmail
       end
       return value
     else
-      mailboxes[mailbox] ||= Mailbox.new(self, mailbox)
+      label(mailbox)
     end
   end
   alias :in_label :in_mailbox
