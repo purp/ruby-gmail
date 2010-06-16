@@ -5,11 +5,11 @@ require 'rubygems'
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
-    gem.name = "ruby-gmail"
+    gem.name = "purp-ruby-gmail"
     gem.summary = %Q{A Rubyesque interface to Gmail, with all the tools you'll need.}
-    gem.description = %Q{A Rubyesque interface to Gmail, with all the tools you'll need. Search, read and send multipart emails; archive, mark as read/unread, delete emails; and manage labels.}
+    gem.description = %Q{A Rubyesque interface to Gmail, with all the tools you'll need. Search, read and send multipart emails; archive, mark as read/unread, delete emails; and manage labels. [This is a fork of http://github.com/justinperkins/ruby-gmail which is a fork of http://github.com/dcparker/ruby-gmail]}
     gem.email = "gems@behindlogic.com"
-    gem.homepage = "http://dcparker.github.com/ruby-gmail"
+    gem.homepage = "http://github.com/purp/ruby-gmail"
     gem.authors = ["BehindLogic", "Justin Perkins", "Jim Meyer"]
     gem.post_install_message = "\n\033[34mIf ruby-gmail saves you TWO hours of work, want to compensate me for, like, a half-hour?\nSupport me in making new and better gems:\033[0m \033[31;4mhttp://pledgie.com/campaigns/7087\033[0m\n\n"
     gem.add_dependency('shared-mime-info', '>= 0')
