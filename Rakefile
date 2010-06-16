@@ -10,7 +10,7 @@ begin
     gem.description = %Q{A Rubyesque interface to Gmail, with all the tools you'll need. Search, read and send multipart emails; archive, mark as read/unread, delete emails; and manage labels.}
     gem.email = "gems@behindlogic.com"
     gem.homepage = "http://dcparker.github.com/ruby-gmail"
-    gem.authors = ["BehindLogic"]
+    gem.authors = ["BehindLogic", "Justin Perkins", "Jim Meyer"]
     gem.post_install_message = "\n\033[34mIf ruby-gmail saves you TWO hours of work, want to compensate me for, like, a half-hour?\nSupport me in making new and better gems:\033[0m \033[31;4mhttp://pledgie.com/campaigns/7087\033[0m\n\n"
     gem.add_dependency('shared-mime-info', '>= 0')
     gem.add_dependency('mail', '>= 2.2.1')
