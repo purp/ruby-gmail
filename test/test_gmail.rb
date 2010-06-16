@@ -50,19 +50,38 @@ class GmailTest < Test::Unit::TestCase
     @gmail.create_label('foo')
   end
   
+  def test_mailbox_calls_return_existing_mailbox
+    setup_mocks(:at_exit => true)
+    mailbox = Gmail::Mailbox.new(@gmail, 'test')
+    @gmail.expects(:mailboxes).returns({'test' => mailbox})
+    
+    assert_equal @gmail.mailbox('test'), mailbox
+  end
+  
+  def test_mailbox_returns_new_mailbox_object_for_mailboxes_it_has_not_yet_seen
+    setup_mocks(:at_exit => true)
+    @gmail.expects(:mailboxes).returns({})
+    Gmail::Mailbox.expects(:new).with(@gmail, 'test').returns('This is my mailbox.')
+    
+    assert_equal @gmail.mailbox('test'), 'This is my mailbox.'
+  end
+  
   private
   def setup_mocks(options = {})
-    options = {:at_exit => false, :login_attempts => 0, :user => 'test'}.merge(options)
+    options = {:at_exit => false, :login_attempts => 0, :user => 'test', :password => 'password'}.merge(options)
     user_name = options[:user]
-    @imap = mock('imap')
+    password = options[:password]
+    
     @res = mock('imap_result')
     @res.expects(:name).at_least(0).returns("OK")
+
+    @imap = mock('imap')
     @imap.expects(:login).at_least(options[:login_attempts]).with("#{user_name}@gmail.com", 'password').returns(@res)
     # need this for the at_exit block that auto-exits after this test method completes
     @imap.expects(:logout).at_least(0).returns(@res) if options[:at_exit]
     
     Net::IMAP.expects(:new).with('imap.gmail.com', 993, true, nil, false).returns(@imap)
-    @gmail = Gmail.new(user_name, 'password')
+    @gmail = Gmail.new(user_name, password)
   end
   
   def breakdown_mocks
