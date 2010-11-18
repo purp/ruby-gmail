@@ -141,10 +141,20 @@ Creating emails now uses the amazing [Mail](http://rubygems.org/gems/mail) rubyg
 * net/imap
 * tmail
 * shared-mime-info rubygem (for MIME-detection when attaching files)
+* mime
 
 ## Install
 
     gem install ruby-gmail
+
+## Contribute
+
+    gem install bundler
+    bundle install
+
+    Fix bug/Add feature
+
+    bundle exec ruby test/test_gmail.rb
 
 ## License
 
