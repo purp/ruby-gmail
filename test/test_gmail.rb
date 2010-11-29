@@ -8,14 +8,14 @@ class GmailTest < Test::Unit::TestCase
   end
   
   def test_imap_does_login
-    setup_gmail_mock(:at_exit => true)
+    setup_gmail_mock
 
     @gmail.imap
     breakdown_mocks
   end
 
   def test_imap_does_login_only_once
-    setup_gmail_mock(:at_exit => true, :login_attempts => 1)
+    setup_gmail_mock(:login_attempts => 1)
 
     @gmail.imap
     @gmail.imap
@@ -23,13 +23,13 @@ class GmailTest < Test::Unit::TestCase
   end
 
   def test_imap_does_login_without_appending_gmail_domain
-    setup_gmail_mock(:at_exit => true, :user => 'test')
+    setup_gmail_mock
 
     @gmail.imap
   end
   
   def test_imap_logs_out
-    setup_gmail_mock(:at_exit => true)
+    setup_gmail_mock
 
     # @imap.expects(:disconnected?).at_least_once.returns(true).then.returns(false)
     # @imap.expects(:login).with('test@gmail.com', 'password')
@@ -39,19 +39,19 @@ class GmailTest < Test::Unit::TestCase
   end
 
   def test_imap_logout_does_nothing_if_not_logged_in
-    setup_gmail_mock
+    setup_gmail_mock(:at_exit => false)
 
     @gmail.logout
   end
   
   def test_imap_calls_create_label
-    setup_gmail_mock(:at_exit => true)
+    setup_gmail_mock
     @imap.expects(:create).with('foo')
     @gmail.create_label('foo')
   end
   
   def test_mailbox_calls_return_existing_mailbox
-    setup_gmail_mock(:at_exit => true)
+    setup_gmail_mock
     mailbox = Gmail::Mailbox.new(@gmail, 'test')
     @gmail.expects(:mailboxes).returns({'test' => mailbox})
     
@@ -59,7 +59,7 @@ class GmailTest < Test::Unit::TestCase
   end
   
   def test_mailbox_returns_new_mailbox_object_for_mailboxes_it_has_not_yet_seen
-    setup_gmail_mock(:at_exit => true)
+    setup_gmail_mock
     @gmail.expects(:mailboxes).returns({})    
     Gmail::Mailbox.expects(:new).with(@gmail, 'test').returns('This is my mailbox.')
     
@@ -68,7 +68,7 @@ class GmailTest < Test::Unit::TestCase
   
   private
   def setup_gmail_mock(options = {})
-    options = {:at_exit => false, :login_attempts => 0, :user => 'test', :password => 'password'}.merge(options)
+    options = {:at_exit => true, :login_attempts => 0, :user => 'test', :password => 'password'}.merge(options)
     user_name = options[:user]
     password = options[:password]
     
@@ -88,3 +88,4 @@ class GmailTest < Test::Unit::TestCase
     @gmail.logout
   end
 end
+
