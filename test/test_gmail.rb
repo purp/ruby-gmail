@@ -8,14 +8,14 @@ class GmailTest < Test::Unit::TestCase
   end
   
   def test_imap_does_login
-    setup_mocks(:at_exit => true)
+    setup_gmail_mock(:at_exit => true)
 
     @gmail.imap
     breakdown_mocks
   end
 
   def test_imap_does_login_only_once
-    setup_mocks(:at_exit => true, :login_attempts => 1)
+    setup_gmail_mock(:at_exit => true, :login_attempts => 1)
 
     @gmail.imap
     @gmail.imap
@@ -23,13 +23,13 @@ class GmailTest < Test::Unit::TestCase
   end
 
   def test_imap_does_login_without_appending_gmail_domain
-    setup_mocks(:at_exit => true, :user => 'test')
+    setup_gmail_mock(:at_exit => true, :user => 'test')
 
     @gmail.imap
   end
   
   def test_imap_logs_out
-    setup_mocks(:at_exit => true)
+    setup_gmail_mock(:at_exit => true)
 
     # @imap.expects(:disconnected?).at_least_once.returns(true).then.returns(false)
     # @imap.expects(:login).with('test@gmail.com', 'password')
@@ -39,19 +39,19 @@ class GmailTest < Test::Unit::TestCase
   end
 
   def test_imap_logout_does_nothing_if_not_logged_in
-    setup_mocks
+    setup_gmail_mock
 
     @gmail.logout
   end
   
   def test_imap_calls_create_label
-    setup_mocks(:at_exit => true)
+    setup_gmail_mock(:at_exit => true)
     @imap.expects(:create).with('foo')
     @gmail.create_label('foo')
   end
   
   def test_mailbox_calls_return_existing_mailbox
-    setup_mocks(:at_exit => true)
+    setup_gmail_mock(:at_exit => true)
     mailbox = Gmail::Mailbox.new(@gmail, 'test')
     @gmail.expects(:mailboxes).returns({'test' => mailbox})
     
@@ -59,15 +59,15 @@ class GmailTest < Test::Unit::TestCase
   end
   
   def test_mailbox_returns_new_mailbox_object_for_mailboxes_it_has_not_yet_seen
-    setup_mocks(:at_exit => true)
-    @gmail.expects(:mailboxes).returns({})
+    setup_gmail_mock(:at_exit => true)
+    @gmail.expects(:mailboxes).returns({})    
     Gmail::Mailbox.expects(:new).with(@gmail, 'test').returns('This is my mailbox.')
     
     assert_equal @gmail.mailbox('test'), 'This is my mailbox.'
   end
   
   private
-  def setup_mocks(options = {})
+  def setup_gmail_mock(options = {})
     options = {:at_exit => false, :login_attempts => 0, :user => 'test', :password => 'password'}.merge(options)
     user_name = options[:user]
     password = options[:password]
