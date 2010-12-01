@@ -2,16 +2,16 @@ require "openssl"
 require "net/smtp"
 
 Net::SMTP.class_eval do
-  
+
   def self.start( address, port = nil,
-                  helo = 'localhost.localdomain',
-                  user = nil, secret = nil, authtype = nil, use_tls = false,
-                  &block) # :yield: smtp
+    helo = 'localhost.localdomain',
+    user = nil, secret = nil, authtype = nil, use_tls = false,
+    &block) # :yield: smtp
     new(address, port).start(helo, user, secret, authtype, use_tls, &block)
   end
 
   def start( helo = 'localhost.localdomain',
-             user = nil, secret = nil, authtype = nil ) # :yield: smtp
+    user = nil, secret = nil, authtype = nil ) # :yield: smtp
     start_method = starttls_auto? ? :do_tls_start : :do_start
     if block_given?
       begin
@@ -27,7 +27,7 @@ Net::SMTP.class_eval do
   end
 
   private
-  
+
   def do_tls_start(helodomain, user, secret, authtype)
     raise IOError, 'SMTP session already started' if @started
     if RUBY_VERSION == '1.8.6'
@@ -59,13 +59,13 @@ Net::SMTP.class_eval do
   ensure
     unless @started
       # authentication failed, cancel connection.
-        @socket.close if not @started and @socket and not @socket.closed?
+      @socket.close if not @started and @socket and not @socket.closed?
       @socket = nil
     end
   end
 
   def do_helo(helodomain)
-     begin
+    begin
       if @esmtp
         ehlo helodomain
       else

@@ -37,7 +37,7 @@ class Gmail
   def inbox
     in_label('inbox')
   end
-  
+
   def create_label(name)
     imap.create(name)
   end
@@ -84,7 +84,7 @@ class Gmail
     mail.from = meta.username unless mail.from
     mail.deliver!
   end
-  
+
   ###########################
   #  LOGIN
   ###########################
@@ -93,11 +93,11 @@ class Gmail
       @logged_in = true if @imap.login(meta.username, meta.password).name == 'OK'
     end
   end
-  
+
   def logged_in?
     !!@logged_in
   end
-  
+
   def logout
     if logged_in?
       @logged_in = false if @imap.logout.name == 'OK'
@@ -131,7 +131,7 @@ class Gmail
   def inspect
     "#<Gmail:#{'0x%x' % (object_id << 1)} (#{meta.username}) #{'dis' if !logged_in?}connected>"
   end
-  
+
   # Accessor for @imap, but ensures that it's logged in first.
   def imap
     # Since we're auto-logging-in, set up auto-logout for later. Can't use #logout since
@@ -142,28 +142,34 @@ class Gmail
   end
 
   private
-    def mailboxes
-      @mailboxes ||= {}
-    end
-    def mailbox_stack
-      @mailbox_stack ||= []
-    end
-    def meta
-      class << self; self end
-    end
-    def domain
-      meta.username.split('@')[0]
-    end
-    def smtp_settings
-      [:smtp, {:address => "smtp.gmail.com",
+  
+  def mailboxes
+    @mailboxes ||= {}
+  end
+  
+  def mailbox_stack
+    @mailbox_stack ||= []
+  end
+  
+  def meta
+    class << self; self end
+  end
+  
+  def domain
+    meta.username.split('@')[0]
+  end
+  
+  def smtp_settings
+    [:smtp, {:address => "smtp.gmail.com",
       :port => 587,
       :domain => domain,
       :user_name => meta.username,
       :password => meta.password,
       :authentication => 'plain',
       :enable_starttls_auto => true}]
-    end
+  end
 end
 
-require 'gmail/mailbox'
-require 'gmail/message'
+  ### FIXME: We should factor this upward in the file or move to a gmail/base.rb model
+  require 'gmail/mailbox'
+  require 'gmail/message'
