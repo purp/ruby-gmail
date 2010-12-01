@@ -140,3 +140,20 @@ class GmailMailboxTest < Test::Unit::TestCase
     assert_equal [], @mailbox.emails(:body => "I've got arms that long to hold you ...")
   end
 end
+
+class GmailMessageTest < Test::Unit::TestCase
+  def setup
+    @mailbox = setup_mailbox_mock
+    @message = Gmail::Message.new(@gmail, @mailbox, '03040226041410160927@mail.example.com')
+  end
+
+  def test_message_knows_its_uid
+    assert_equal '03040226041410160927@mail.example.com', @message.uid
+  end
+
+  def test_new_message_must_have_uid_to_avoid_circular_dependency
+    assert_raise RuntimeError do
+      Gmail::Message.new(@gmail, @mailbox, nil)
+    end
+  end
+end

@@ -1,7 +1,11 @@
 class Gmail
   class Message
-    attr_reader :mail
+    attr_reader :mail, :uid
+
+    # FIXME: mailbox includes its parent gmail connection, so we shouldn't need it here.
+    # FIXME: make mailbox an attr and stop touching @mailbox
     def initialize(gmail, mailbox, uid)
+      raise "uid cannot be nil" unless uid
       @gmail = gmail
       @mailbox = mailbox
       @uid = uid
@@ -11,10 +15,10 @@ class Gmail
       "<#Message:#{object_id} mailbox=#{@mailbox.name}#{' uid='+@uid.to_s if @uid}#{' message_id='+@message_id.to_s if @message_id}>"
     end
 
-    # Auto IMAP info
-    def uid
-      @uid ||= @gmail.imap.uid_search(['HEADER', 'Message-ID', message_id])[0]
-    end
+    # # Auto IMAP info
+    # def uid
+    #   @uid ||= @gmail.imap.uid_search(['HEADER', 'Message-ID', message_id])[0]
+    # end
 
     # IMAP Operations
     def flag(flg)
@@ -90,7 +94,7 @@ class Gmail
     private
 
     # Parsed MIME message object
-    def message
+    def mime_message
       return @mail if @mail
       require 'mail'
       _body = @gmail.in_mailbox(@mailbox) { @gmail.imap.uid_fetch(uid, "RFC822")[0].attr["RFC822"] }
@@ -100,9 +104,9 @@ class Gmail
     # Delegate all other methods to the Mail message
     def method_missing(*args, &block)
       if block_given?
-        message.send(*args, &block)
+        mime_message.send(*args, &block)
       else
-        message.send(*args)
+        mime_message.send(*args)
       end
     end
   end
