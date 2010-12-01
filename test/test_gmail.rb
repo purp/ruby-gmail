@@ -73,9 +73,7 @@ end
 
 class GmailMailboxTest < Test::Unit::TestCase
   def setup
-    @gmail = setup_gmail_mock
-    @mailbox = Gmail::Mailbox.new(@gmail, 'I know my name')
-    @imap_connection.stubs(:select).with(@mailbox.name)
+    @mailbox = setup_mailbox_mock(:name => 'I know my name')
   end
   
   def test_mailbox_knows_its_name

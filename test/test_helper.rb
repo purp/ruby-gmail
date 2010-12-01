@@ -3,6 +3,7 @@ $LOAD_PATH << File.expand_path(File.join(%w(.. lib)), File.dirname(__FILE__))
 require 'test/unit'
 require 'rubygems'
 require 'mocha'
+
 require 'gmail'
 
 def setup_gmail_mock(options = {})
@@ -22,6 +23,13 @@ def setup_gmail_mock(options = {})
   
   Net::IMAP.expects(:new).with('imap.gmail.com', 993, true, nil, false).returns(@imap_connection)
   Gmail.new(user_name, password)
+end
+
+def setup_mailbox_mock(options = {})
+  options = {:name => 'Mailbox Name'}.merge(options)
+  @gmail = setup_gmail_mock
+  @imap_connection.stubs(:select).with(options[:name])
+  Gmail::Mailbox.new(@gmail, options[:name])
 end
 
 def breakdown_mocks
