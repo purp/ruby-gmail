@@ -89,17 +89,18 @@ class Gmail
   #  LOGIN
   ###########################
   def login
-    res = @imap.login(meta.username, meta.password)
-    @logged_in = true if res.name == 'OK'
+    unless logged_in?
+      @logged_in = true if @imap.login(meta.username, meta.password).name == 'OK'
+    end
   end
+  
   def logged_in?
     !!@logged_in
   end
-  # Log out of gmail
+  
   def logout
     if logged_in?
-      res = @imap.logout
-      @logged_in = false if res.name == 'OK'
+      @logged_in = false if @imap.logout.name == 'OK'
     end
   end
 
@@ -133,10 +134,10 @@ class Gmail
   
   # Accessor for @imap, but ensures that it's logged in first.
   def imap
-    unless logged_in?
-      login
-      at_exit { logout } # Set up auto-logout for later.
-    end
+    # Since we're auto-logging-in, set up auto-logout for later. Can't use #logout since
+    # we need to bind @imap's current context in the block. Yay, closures!
+    at_exit { @imap.logout } unless logged_in?
+    login
     @imap
   end
 
