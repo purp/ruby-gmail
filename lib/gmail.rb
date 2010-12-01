@@ -113,7 +113,7 @@ class Gmail
       end
       value = block.arity == 1 ? block.call(mailbox) : block.call
       mailbox_stack.pop
-      # Select previously selected mailbox if there is one
+      # Select most recently selected mailbox if there is one
       if mailbox_stack.last
         imap.select(mailbox_stack.last.name)
         @selected = mailbox.name
