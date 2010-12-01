@@ -3,6 +3,7 @@ require File.expand_path('test_helper', File.dirname(__FILE__))
 class GmailTest < Test::Unit::TestCase
   def setup
     @gmail = setup_gmail_mock(:user => 'test', :password => 'password')
+    assert_equal @imap_connection, @gmail.instance_variable_get('@imap')
   end
   
   def test_non_email_username_gets_gmail_domain
@@ -22,7 +23,11 @@ class GmailTest < Test::Unit::TestCase
     assert_nothing_raised { @gmail.login }
   end
   
-  def test_imap_automatically_logs_in
+  def test_imap_automatically_logs_in_and_out
+    ### TODO: Figure out how to test an at_exit block
+    # @imap_connection.expects(:logout).once
+    # Kernel.expects(:at_exit).once
+    
     assert !@gmail.logged_in?
     @gmail.imap
     assert @gmail.logged_in?
@@ -34,9 +39,9 @@ class GmailTest < Test::Unit::TestCase
     assert !@gmail.logged_in?
   end
 
-  def test_imap_logout_does_nothing_if_not_logged_in
+  def test_logout_does_nothing_if_not_logged_in
     @gmail = setup_gmail_mock
-    @imap.expects(:logout).never
+    @imap_connection.expects(:logout).never
     
     assert !@gmail.logged_in?
     @gmail.logout
@@ -63,5 +68,17 @@ class GmailTest < Test::Unit::TestCase
     Gmail::Mailbox.expects(:new).with(@gmail, 'test').returns('This is my mailbox.')
     
     assert_equal @gmail.mailbox('test'), 'This is my mailbox.'
+  end
+end
+
+class GmailMailboxTest < Test::Unit::TestCase
+  def setup
+    @gmail = setup_gmail_mock
+    @mailbox = Gmail::Mailbox.new(@gmail, 'I know my name')
+  end
+  
+  def test_mailbox_knows_its_name
+    assert_equal @mailbox.name, 'I know my name'
+    assert_equal @mailbox.to_s, @mailbox.name
   end
 end
