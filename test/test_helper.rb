@@ -12,14 +12,19 @@ def setup_gmail_mock(options = {})
   email_address = user_name.match('@') ? user_name : "#{user_name}@gmail.com" 
   password = options[:password]
 
-  @imap_result = mock('imap_result')
-  @imap_result.expects(:name).at_least(0).returns("OK")
+  @imap_success_result = mock('imap_result')
+  @imap_success_result.expects(:name).at_least(0).returns("OK")
+  
+  ### FIXME: What result is returned when we fail to make a +FLAGS call? That should be this
+  # @imap_failure_result = mock('imap_result')
+  # @imap_failure_result.expects(:name).at_least(0).returns(nil)
+  @imap_failure_result = nil
 
   @imap_connection = mock('imap')
-  @imap_connection.stubs(:login).with(email_address, password).returns(@imap_result)
+  @imap_connection.stubs(:login).with(email_address, password).returns(@imap_success_result)
 
   # need this for the at_exit block that auto-exits after this test method completes
-  @imap_connection.stubs(:logout).returns(@imap_result)
+  @imap_connection.stubs(:logout).returns(@imap_success_result)
 
   Net::IMAP.expects(:new).with('imap.gmail.com', 993, true, nil, false).returns(@imap_connection)
   Gmail.new(user_name, password)

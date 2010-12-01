@@ -144,16 +144,29 @@ end
 class GmailMessageTest < Test::Unit::TestCase
   def setup
     @mailbox = setup_mailbox_mock
-    @message = Gmail::Message.new(@gmail, @mailbox, '03040226041410160927@mail.example.com')
+    @uid = '03040226041410160927@mail.example.com'
+    @message = Gmail::Message.new(@gmail, @mailbox, @uid)
   end
 
   def test_message_knows_its_uid
-    assert_equal '03040226041410160927@mail.example.com', @message.uid
+    assert_equal @uid, @message.uid
   end
 
   def test_new_message_must_have_uid_to_avoid_circular_dependency
     assert_raise RuntimeError do
       Gmail::Message.new(@gmail, @mailbox, nil)
     end
+  end
+
+  def test_new_message_with_bogus_uid_does_something_reasonable
+    assert false, 'Figure out how a bad UID is handled, then test that it remains consistent'
+  end
+
+  def test_flag_handles_explicit_flag_settings_properly
+    @imap_connection.expects(:uid_store).with(@uid, '+FLAGS', [:Seen]).once.returns(@imap_success_result)
+    assert @message.flag(:Seen)
+
+    @imap_connection.expects(:uid_store).with(@uid, '+FLAGS', [:Bogus]).once.returns(@imap_failure_result)
+    assert !@message.flag(:Bogus)
   end
 end
