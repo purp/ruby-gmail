@@ -129,10 +129,16 @@ class GmailMailboxTest < Test::Unit::TestCase
     @imap_connection.expects(:uid_search).with(['ALL', 'ON', right_now.to_imap_date]).once.returns([])
     assert_equal [], @mailbox.emails(:on => right_now)
     
+    @imap_connection.expects(:uid_search).with(['ALL', 'SUBJECT', 'With love ...']).once.returns([])
+    assert_equal [], @mailbox.emails(:subject => 'With love ...')
+    
     @imap_connection.expects(:uid_search).with(['ALL', 'FROM', 'Me']).once.returns([])
     assert_equal [], @mailbox.emails(:from => 'Me')
     
     @imap_connection.expects(:uid_search).with(['ALL', 'TO', 'You']).once.returns([])
     assert_equal [], @mailbox.emails(:to => 'You')
+    
+    @imap_connection.expects(:uid_search).with(['ALL', 'BODY', "I've got arms that long to hold you ..."]).once.returns([])
+    assert_equal [], @mailbox.emails(:body => "I've got arms that long to hold you ...")
   end
 end
